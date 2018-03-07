@@ -2,11 +2,19 @@
 var rtm = new RTM("wss://open-data.api.satori.com", "aB5aa04705293d70eEA6fE864Ed65a0E")
 
 // create a new subscription with "your-channel" name
-var channel = rtm.subscribe("USGS-Earthquakes", RTM.SubscriptionMode.SIMPLE)
+var channel = rtm.subscribe("Twitter-statuses-sample", RTM.SubscriptionMode.SIMPLE)
 
 channel.on("enter-subscribed", function() {
   // When subscription is established (confirmed by Satori RTM).
   console.log("Subscribed to the channel");
+
+  window.heatmapData = new google.maps.MVCArray([])
+  window.heatmap = new google.maps.visualization.HeatmapLayer({
+        data: heatmapData,
+        dissipating: true,
+        map: map
+    });
+
 });
 
 channel.on("rtm/subscribe/error", function(pdu) {
@@ -15,15 +23,16 @@ channel.on("rtm/subscribe/error", function(pdu) {
 })
 
 channel.on("rtm/subscription/data", function(pdu) {
-    console.log(pdu)
-  // Messages arrive in an array.
   pdu.body.messages.forEach(function(msg) {
-    let lat = msg.geometry.coordinates[0]
-    let lon = msg.geometry.coordinates[1]
-    let mag = msg.properties.mag
-    let title = msg.properties.title
+      if (!msg.created_at) return
+      if (msg.lang !== "en") return
+      if (!(/hey/g).test(msg.text)) return
 
-    display_earthquake({title: title, lat: lat, lon: lon, mag: mag})
+      let tweet_data = {
+          text: msg.text
+      }
+
+      display_tweet(tweet_data)
   });
 })
 
@@ -35,24 +44,20 @@ rtm.start()
  * {"geometry":{"coordinates":[-122.7391663,38.7631683,1.2],"type":"Point"},"id":"nc72980201","type":"Feature","properties":{"dmin":0.01124,"code":"72980201","sources":",nc,","tz":-480,"mmi":null,"type":"earthquake","title":"M 1.3 - 2km SE of The Geysers, CA","magType":"md","nst":9,"sig":25,"tsunami":0,"mag":1.27,"alert":null,"gap":121,"rms":0.02,"place":"2km SE of The Geysers, CA","net":"nc","types":",geoserve,nearby-cities,origin,phase-data,scitech-link,","felt":null,"cdi":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/nc72980201","ids":",nc72980201,","time":1520430191430,"detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc72980201.geojson","updated":1520431743865,"status":"automatic"}}
  */
 
-var heatmapData = [];
 
- function display_earthquake(earthquakeData) {
-     console.log(JSON.stringify(earthquakeData))
+
+ function display_tweet(tweet_data) {
+     console.log(tweet_data.text)
       
-
+    
       var latLng = new google.maps.LatLng(earthquakeData.lon, earthquakeData.lat);
+
+      /*
       var magnitude = earthquakeData.mag;
       var weightedLoc = {
           location: latLng,
-          weight: magnitude/100//Math.pow(2, magnitude)
-      };
-      heatmapData.push(weightedLoc);
-      
+          weight: Math.pow(4, magnitude)
+      };*/
 
-      var heatmap = new google.maps.visualization.HeatmapLayer({
-        data: heatmapData,
-        dissipating: false,
-        map: map
-      });
+      heatmapData.push(latLng);
  }
