@@ -37,4 +37,22 @@ rtm.start()
 
  function display_earthquake(earthquakeData) {
      console.log(JSON.stringify(earthquakeData))
+      var heatmapData = [];
+
+      var latLng = new google.maps.LatLng(earthquakeData.lat, earthquakeData.lon);
+      var magnitude = earthquakeData.mag;
+      var weightedLoc = {
+          location: latLng,
+          weight: Math.pow(2, magnitude)
+        };
+        heatmapData.push(weightedLoc);
+      
+
+      var heatmap = new google.maps.visualization.HeatmapLayer({
+        data: heatmapData,
+        dissipating: false,
+        map: map
+      });
+    
+  
  }
