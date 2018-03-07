@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Earthquake Visualizer</title>
+        <script src="https://satori-a.akamaihd.net/satori-rtm-sdk/v1.2.0/sdk.min.js"></script>
         <script src="main.js"></script>
     </head>
     <style>
@@ -29,10 +30,11 @@
         <header>Earthquake Visualizer - Chess Hackathon 2018</header>
         <div id="map"></div>
         <script>
+        window.map = null
 
         function initMap() {
             var location = {lat: 37.0902, lng: -95.7129};
-            var map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 4,
                 center: location
             })
