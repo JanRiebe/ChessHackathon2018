@@ -35,17 +35,19 @@ rtm.start()
  * {"geometry":{"coordinates":[-122.7391663,38.7631683,1.2],"type":"Point"},"id":"nc72980201","type":"Feature","properties":{"dmin":0.01124,"code":"72980201","sources":",nc,","tz":-480,"mmi":null,"type":"earthquake","title":"M 1.3 - 2km SE of The Geysers, CA","magType":"md","nst":9,"sig":25,"tsunami":0,"mag":1.27,"alert":null,"gap":121,"rms":0.02,"place":"2km SE of The Geysers, CA","net":"nc","types":",geoserve,nearby-cities,origin,phase-data,scitech-link,","felt":null,"cdi":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/nc72980201","ids":",nc72980201,","time":1520430191430,"detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/nc72980201.geojson","updated":1520431743865,"status":"automatic"}}
  */
 
+var heatmapData = [];
+
  function display_earthquake(earthquakeData) {
      console.log(JSON.stringify(earthquakeData))
-      var heatmapData = [];
+      
 
-      var latLng = new google.maps.LatLng(earthquakeData.lat, earthquakeData.lon);
+      var latLng = new google.maps.LatLng(earthquakeData.lon, earthquakeData.lat);
       var magnitude = earthquakeData.mag;
       var weightedLoc = {
           location: latLng,
-          weight: Math.pow(2, magnitude)
-        };
-        heatmapData.push(weightedLoc);
+          weight: magnitude/100//Math.pow(2, magnitude)
+      };
+      heatmapData.push(weightedLoc);
       
 
       var heatmap = new google.maps.visualization.HeatmapLayer({
@@ -53,6 +55,4 @@ rtm.start()
         dissipating: false,
         map: map
       });
-    
-  
  }
