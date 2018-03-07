@@ -11,28 +11,65 @@ channel.on("enter-subscribed", function() {
   window.heatmapData = new google.maps.MVCArray([])
   window.heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatmapData,
-        dissipating: true,
-        map: map
+        dissipating: false,
+        map: map,
+        gradient: ['rgba(0, 255, 255, 0)',
+        'rgba(0, 255, 255, 0.5)',
+        'rgba(0, 191, 255, 0.6)',
+        'rgba(0, 127, 255, 1)',
+        'rgba(0, 63, 255, 1)',
+        'rgba(0, 0, 255, 1)',
+        'rgba(0, 0, 223, 1)',
+        'rgba(0, 0, 191, 1)',
+        'rgba(0, 0, 159, 0.8)',
+        'rgba(0, 0, 127, 0.7)',
+        'rgba(0, 0, 91, 0.6)',
+        'rgba(0, 0, 63, 0.5)',
+        'rgba(0, 31, 31, 0.3)',
+        'rgba(255, 255, 255, 0.3)']
     });
-
+  window.geocoder = new google.maps.Geocoder()
 });
+
+
 
 channel.on("rtm/subscribe/error", function(pdu) {
   // When a subscribe error occurs.
   console.log("Failed to subscribe: " + pdu.body.error + " - " + pdu.body.reason);
 })
 
+function getLatLong(location, callback) {
+
+    geocoder.geocode({address: location}, function(results, status) {
+        if (status !== "OK") {
+            return
+        }
+
+        console.log(location)
+        callback({lat: results[0].geometry.location.lat(), lon: results[0].geometry.location.lng()}, status)
+    })
+}
+
+
 channel.on("rtm/subscription/data", function(pdu) {
   pdu.body.messages.forEach(function(msg) {
       if (!msg.created_at) return
       if (msg.lang !== "en") return
       if (!(/hey/g).test(msg.text)) return
+      if (!msg.user.location) return
 
-      let tweet_data = {
-          text: msg.text
-      }
+      getLatLong(msg.user.location, function(loc, status) {
+          //if (status !== "OK") return
 
-      display_tweet(tweet_data)
+          if (!loc.lat) return
+          let tweet_data = {
+              text: msg.text,
+              lat: loc.lat,
+              lon: loc.lon
+          }
+          
+          display_tweet(tweet_data)
+      })
   });
 })
 
@@ -47,17 +84,13 @@ rtm.start()
 
 
  function display_tweet(tweet_data) {
-     console.log(tweet_data.text)
-      
-    
-      var latLng = new google.maps.LatLng(earthquakeData.lon, earthquakeData.lat);
+      var latLng = new google.maps.LatLng(tweet_data.lat, tweet_data.lon);
 
-      /*
-      var magnitude = earthquakeData.mag;
+      
       var weightedLoc = {
           location: latLng,
-          weight: Math.pow(4, magnitude)
-      };*/
+          weight: 10
+      };
 
       heatmapData.push(latLng);
  }

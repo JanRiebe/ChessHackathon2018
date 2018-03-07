@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Earthquake Visualizer</title>
+        <title>Hello, World</title>
         <script src="https://satori-a.akamaihd.net/satori-rtm-sdk/v1.2.0/sdk.min.js"></script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1QFRUl0RPOycnlhpcKONob01cPEzXxfU&libraries=visualization&callback=initMap"></script>
         <script async defer src="main.js"></script>
@@ -24,11 +24,11 @@
 
         #map {
             width: 100%;
-            height: 100vh;
+            height: 85vh;
         }
     </style>
     <body>
-        <header>Earthquake Visualizer - Chess Hackathon 2018</header>
+        <header>Hello, World - Chess Hackathon 2018<br>This is a visualization of live tweets containing the word "hello"</header>
         <div id="map"></div>
         <script>
         window.map = null
@@ -36,7 +36,7 @@
         function initMap() {
             var location = {lat: 37.0902, lng: -95.7129};
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 4,
+                zoom: 2,
                 center: location,
                 styles: [
             {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
