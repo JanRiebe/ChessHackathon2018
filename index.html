@@ -29,16 +29,13 @@
         <header>Earthquake Visualizer - Chess Hackathon 2018</header>
         <div id="map"></div>
         <script>
+
         function initMap() {
-            var uluru = {lat: 95.7129, lng: 37.0902};
+            var location = {lat: 37.0902, lng: -95.7129};
             var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 4,
-            center: uluru
-            });
-            var marker = new google.maps.Marker({
-            position: uluru,
-            map: map
-            });
+                zoom: 4,
+                center: location
+            })
         }
         </script>
         <script async defer
